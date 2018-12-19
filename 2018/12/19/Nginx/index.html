@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=6.6.0" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.6.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.6.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.6.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.6.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '6.6.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="一、产生背景生活中常出现服务器无法满足访问需求： 1、巨大流量-海量并发的访问 2、单台服务器资源和能力有限">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Hexo">
+<meta property="og:url" content="http://yoursite.com/2018/12/19/Nginx/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="一、产生背景生活中常出现服务器无法满足访问需求： 1、巨大流量-海量并发的访问 2、单台服务器资源和能力有限">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-12-19T03:23:59.628Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Hexo">
+<meta name="twitter:description" content="一、产生背景生活中常出现服务器无法满足访问需求： 1、巨大流量-海量并发的访问 2、单台服务器资源和能力有限">
+
+
+
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/12/19/Nginx/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title> | Hexo</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion .logo-line-before i { left: initial; }
+    .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hexo</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>Startseite</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>Tags</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>Kategorien</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>Archiv</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-schedule">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/schedule/" rel="section"><i class="menu-item-icon fa fa-fw fa-calendar"></i> <br>Schedule</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/12/19/Nginx/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="SHEN JQ">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Veröffentlicht am</span>
+              
+
+              
+                
+              
+
+              <time title="Post created: 2018-12-19 10:51:50 / Updated at: 11:23:59" itemprop="dateCreated datePublished" datetime="2018-12-19T10:51:50+08:00">2018-12-19</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="一、产生背景"><a href="#一、产生背景" class="headerlink" title="一、产生背景"></a>一、产生背景</h2><p>生活中常出现服务器无法满足访问需求：</p>
+<p>1、巨大流量-海量并发的访问</p>
+<p>2、单台服务器资源和能力有限<a id="more"></a></p>
+<h2 id="二、负载均衡"><a href="#二、负载均衡" class="headerlink" title="二、负载均衡"></a>二、负载均衡</h2><h3 id="高并发概念："><a href="#高并发概念：" class="headerlink" title="高并发概念："></a>高并发概念：</h3><p>使用多个线程或进程同时处理不同的操作，即每秒有多个请求同时访问</p>
+<h3 id="负载均衡："><a href="#负载均衡：" class="headerlink" title="负载均衡："></a>负载均衡：</h3><p>将请求数据均匀的分部到不同执行单元上执行</p>
+<h3 id="tomcat并发："><a href="#tomcat并发：" class="headerlink" title="tomcat并发："></a>tomcat并发：</h3><p>一般一台tomcat可处理并发200-250，再往上就丢包严重</p>
+<h2 id="三、nginx介绍"><a href="#三、nginx介绍" class="headerlink" title="三、nginx介绍"></a>三、nginx介绍</h2><p>Nginx是一款轻量级的Web服务器（反向代理）及电子邮件（IMAP/POP3）代理服务器</p>
+<h3 id="Nginx和Apache优缺点对比"><a href="#Nginx和Apache优缺点对比" class="headerlink" title="Nginx和Apache优缺点对比"></a>Nginx和Apache优缺点对比</h3><p>nginx对比Apache优点：轻量级，比apache占用更少的内存及资源高并发，nginx处理请求的是异步非阻塞（如前端ajax），而apache是阻塞型的，在高并发的情况下nginx可保持低资源低消耗、高性能高度模块化的设计，编写模块相对简单，同时高性能模块出品迅速。配置简单</p>
+<p>apache对比nginx优点：rewrite重写，强大模块超多，基本所能想到的都能找到，同时bug少</p>
+<h2 id="四、安装Nginx"><a href="#四、安装Nginx" class="headerlink" title="四、安装Nginx"></a>四、安装Nginx</h2><p>第一步：yum安装依赖</p>
+<p>依赖    gcc openssl-devel pcre-devel zlib-devel</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum -y install gcc openssl-devel pcre-devel zlib-devel</span><br></pre></td></tr></table></figure>
+<p>第二步：解压文件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tar -zxvf nginx-1.8.1.tar.gz</span><br></pre></td></tr></table></figure>
+<p>第三步：configure配置</p>
+<p>进入解压后的源码目录执行</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">	./configure	<span class="comment">//不加后面地址的情况下，默认安装在/usr/local/nginx</span></span><br><span class="line">或	./configure --prefix=/usr/soft/nginx</span><br></pre></td></tr></table></figure>
+<p>第四步：编译并安装</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">make &amp;&amp; make install</span><br></pre></td></tr></table></figure>
+<p>第五步：配置nginx为系统服务</p>
+<p>在/etc/rc.d/init.d/目录下建nginx文本文件</p>
+<p>拷贝以下内容</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br></pre></td><td class="code"><pre><span class="line">#!/bin/sh</span><br><span class="line">#</span><br><span class="line"># nginx - this script starts and stops the nginx daemon</span><br><span class="line">#</span><br><span class="line"># chkconfig:   - 85 15 </span><br><span class="line"># description:  Nginx is an HTTP(S) server, HTTP(S) reverse \</span><br><span class="line">#               proxy and IMAP/POP3 proxy server</span><br><span class="line"># processname: nginx</span><br><span class="line"># config:      /etc/nginx/nginx.conf</span><br><span class="line"># config:      /etc/sysconfig/nginx</span><br><span class="line"># pidfile:     /var/run/nginx.pid</span><br><span class="line"> </span><br><span class="line"># Source function library.</span><br><span class="line">. /etc/rc.d/init.d/functions</span><br><span class="line"> </span><br><span class="line"># Source networking configuration.</span><br><span class="line">. /etc/sysconfig/network</span><br><span class="line"> </span><br><span class="line"># Check that networking is up.</span><br><span class="line">[ <span class="string">"$NETWORKING"</span> = <span class="string">"no"</span> ] &amp;&amp; exit <span class="number">0</span></span><br><span class="line"> </span><br><span class="line">nginx=<span class="string">"/usr/local/nginx/sbin/nginx"</span></span><br><span class="line">prog=$(basename $nginx)</span><br><span class="line"> </span><br><span class="line">NGINX_CONF_FILE=<span class="string">"/usr/local/nginx/conf/nginx.conf"</span></span><br><span class="line"> </span><br><span class="line">[ -f /etc/sysconfig/nginx ] &amp;&amp; . /etc/sysconfig/nginx</span><br><span class="line"> </span><br><span class="line">lockfile=/<span class="keyword">var</span>/lock/subsys/nginx</span><br><span class="line"> </span><br><span class="line">make_dirs() &#123;</span><br><span class="line">   # make required directories</span><br><span class="line">   user=`nginx -V <span class="number">2</span>&gt;&amp;<span class="number">1</span> | grep <span class="string">"configure arguments:"</span> | sed <span class="string">'s/[^*]*--user=\([^ ]*\).*/\1/g'</span> -`</span><br><span class="line">   options=`$nginx -V <span class="number">2</span>&gt;&amp;<span class="number">1</span> | grep <span class="string">'configure arguments:'</span>`</span><br><span class="line">   <span class="keyword">for</span> opt in $options; <span class="keyword">do</span></span><br><span class="line">       <span class="keyword">if</span> [ `echo $opt | grep <span class="string">'.*-temp-path'</span>` ]; then</span><br><span class="line">           value=`echo $opt | cut -d <span class="string">"="</span> -f <span class="number">2</span>`</span><br><span class="line">           <span class="keyword">if</span> [ ! -d <span class="string">"$value"</span> ]; then</span><br><span class="line">               # echo "creating" $value</span><br><span class="line">               mkdir -p $value &amp;&amp; chown -R $user $value</span><br><span class="line">           fi</span><br><span class="line">       fi</span><br><span class="line">   done</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">start() &#123;</span><br><span class="line">    [ -x $nginx ] || exit <span class="number">5</span></span><br><span class="line">    [ -f $NGINX_CONF_FILE ] || exit <span class="number">6</span></span><br><span class="line">    make_dirs</span><br><span class="line">    echo -n $<span class="string">"Starting $prog: "</span></span><br><span class="line">    daemon $nginx -c $NGINX_CONF_FILE</span><br><span class="line">    retval=$?</span><br><span class="line">    echo</span><br><span class="line">    [ $retval -eq <span class="number">0</span> ] &amp;&amp; touch $lockfile</span><br><span class="line">    <span class="keyword">return</span> $retval</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">stop() &#123;</span><br><span class="line">    echo -n $<span class="string">"Stopping $prog: "</span></span><br><span class="line">    killproc $prog -QUIT</span><br><span class="line">    retval=$?</span><br><span class="line">    echo</span><br><span class="line">    [ $retval -eq <span class="number">0</span> ] &amp;&amp; rm -f $lockfile</span><br><span class="line">    <span class="keyword">return</span> $retval</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">restart() &#123;</span><br><span class="line">    configtest || <span class="keyword">return</span> $?</span><br><span class="line">    stop</span><br><span class="line">    sleep <span class="number">1</span></span><br><span class="line">    start</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">reload() &#123;</span><br><span class="line">    configtest || <span class="keyword">return</span> $?</span><br><span class="line">    echo -n $<span class="string">"Reloading $prog: "</span></span><br><span class="line">    killproc $nginx -HUP</span><br><span class="line">    RETVAL=$?</span><br><span class="line">    echo</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">force_reload() &#123;</span><br><span class="line">    restart</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">configtest() &#123;</span><br><span class="line">  $nginx -t -c $NGINX_CONF_FILE</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">rh_status() &#123;</span><br><span class="line">    status $prog</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">rh_status_q() &#123;</span><br><span class="line">    rh_status &gt;/dev/<span class="keyword">null</span> <span class="number">2</span>&gt;&amp;<span class="number">1</span></span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="keyword">case</span> <span class="string">"$1"</span> in</span><br><span class="line">    start)</span><br><span class="line">        rh_status_q &amp;&amp; exit <span class="number">0</span></span><br><span class="line">        $<span class="number">1</span></span><br><span class="line">        ;;</span><br><span class="line">    stop)</span><br><span class="line">        rh_status_q || exit <span class="number">0</span></span><br><span class="line">        $<span class="number">1</span></span><br><span class="line">        ;;</span><br><span class="line">    restart|configtest)</span><br><span class="line">        $<span class="number">1</span></span><br><span class="line">        ;;</span><br><span class="line">    reload)</span><br><span class="line">        rh_status_q || exit <span class="number">7</span></span><br><span class="line">        $<span class="number">1</span></span><br><span class="line">        ;;</span><br><span class="line">    force-reload)</span><br><span class="line">        force_reload</span><br><span class="line">        ;;</span><br><span class="line">    status)</span><br><span class="line">        rh_status</span><br><span class="line">        ;;</span><br><span class="line">    condrestart|<span class="keyword">try</span>-restart)</span><br><span class="line">        rh_status_q || exit <span class="number">0</span></span><br><span class="line">            ;;</span><br><span class="line">    *)</span><br><span class="line">        echo $<span class="string">"Usage: $0 &#123;start|stop|status|restart|condrestart|try-restart|reload|force-reload|configtest&#125;"</span></span><br><span class="line">        exit <span class="number">2</span></span><br><span class="line">esac</span><br></pre></td></tr></table></figure>
+<p>修改nginx文件的执行权限</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">chmod +x nginx</span><br></pre></td></tr></table></figure>
+<p>添加该文件到系统服务中</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">chkconfig --add nginx	<span class="comment">//添加</span></span><br><span class="line">chkconfig --list nginx	<span class="comment">//查看是否添加成功</span></span><br></pre></td></tr></table></figure>
+<p>重启    service nginx start/stop/restart</p>
+<p>浏览器访问虚拟机端口80，可以看到welcome to nginx即配置成功</p>
+<h2 id="五、Nginx配置"><a href="#五、Nginx配置" class="headerlink" title="五、Nginx配置"></a>五、Nginx配置</h2><h3 id="1、nginx默认配置"><a href="#1、nginx默认配置" class="headerlink" title="1、nginx默认配置"></a>1、nginx默认配置</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">vim /usr/local/conf/nginx.conf	<span class="comment">//进入nginx配置文件</span></span><br><span class="line">    </span><br><span class="line"><span class="comment">//进程数，建议设置和CPU个数一样或2倍</span></span><br><span class="line">worker_processes  <span class="number">2</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">//日志级别</span></span><br><span class="line">error_log  logs/error.log  warning;(默认error级别)</span><br><span class="line"></span><br><span class="line"><span class="comment">// nginx 启动后的pid 存放位置</span></span><br><span class="line"><span class="comment">//pid        logs/nginx.pid;</span></span><br><span class="line"></span><br><span class="line">events &#123;</span><br><span class="line">	<span class="comment">//配置每个进程的连接数，总的连接数= worker_processes * worker_connections</span></span><br><span class="line">    <span class="comment">//默认1024</span></span><br><span class="line">    worker_connections  <span class="number">10240</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">http &#123;</span><br><span class="line">    include       mime.types;</span><br><span class="line">    default_type  application/octet-stream;</span><br><span class="line">    sendfile        on;</span><br><span class="line"><span class="comment">//连接超时时间，单位秒</span></span><br><span class="line">keepalive_timeout  <span class="number">65</span>;</span><br><span class="line">    server &#123;</span><br><span class="line">        listen       <span class="number">80</span>;</span><br><span class="line">        server_name  localhost                 </span><br><span class="line">        <span class="comment">//默认请求</span></span><br><span class="line">  		location / &#123;</span><br><span class="line">    				 root  html;   <span class="comment">//定义服务器的默认网站根目录位置</span></span><br><span class="line">   				  index  index.php index.html index.htm;  <span class="comment">//定义首页索引文件的名称</span></span><br><span class="line">        &#125;</span><br><span class="line">	    <span class="comment">//定义错误提示页面</span></span><br><span class="line">        error_page   <span class="number">500</span> <span class="number">502</span> <span class="number">503</span> <span class="number">504</span>  /<span class="number">50</span>x.html;</span><br><span class="line">        location = /<span class="number">50</span>x.html &#123;</span><br><span class="line">            root   html;</span><br><span class="line">        &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="2、负载均衡配置"><a href="#2、负载均衡配置" class="headerlink" title="2、负载均衡配置"></a>2、负载均衡配置</h3><p>轮询负载均衡    （默认）</p>
+<p>加权负载均衡    （server node01 weigth 3）数字代表权重1-10 越大权重越大</p>
+<p>最少连接数    （least_conn）</p>
+<p>ip_hash        （ip_hash）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">http &#123; </span><br><span class="line">    upstream shsxt&#123; </span><br><span class="line">        server node01; </span><br><span class="line">        server node02; </span><br><span class="line">        server node03; //node01/02/03为可被分配的服务器</span><br><span class="line">    &#125; </span><br><span class="line"></span><br><span class="line">    server &#123; </span><br><span class="line">        listen 80; </span><br><span class="line">	server_name  localhost;</span><br><span class="line">        location / &#123;</span><br><span class="line">            proxy_pass http://shsxt;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>访问控制</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">location / &#123;</span><br><span class="line">    deny <span class="number">192.168</span>.2.180;</span><br><span class="line">    allow <span class="number">192.168</span>.78.0/<span class="number">24</span>;</span><br><span class="line">    allow <span class="number">10.1</span>.1.0/<span class="number">16</span>;</span><br><span class="line">    allow <span class="number">192.168</span>.1.0/<span class="number">32</span>;</span><br><span class="line">    deny all;</span><br><span class="line">    proxy_pass http:<span class="comment">//shsxt;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/12/17/Linux入门/" rel="next" title="">
+                <i class="fa fa-chevron-left"></i> 
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Inhaltsverzeichnis
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Übersicht
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">SHEN JQ</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">2</span>
+                    <span class="site-state-item-name">Artikel</span>
+                  </a>
+                </div>
+              
+
+              
+
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://github.com/sjq1271227116" title="GitHub &rarr; https://github.com/sjq1271227116" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="mailto:1271227116@qq.com" title="E-Mail &rarr; mailto:1271227116@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                </span>
+              
+            </div>
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#一、产生背景"><span class="nav-number">1.</span> <span class="nav-text">一、产生背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二、负载均衡"><span class="nav-number">2.</span> <span class="nav-text">二、负载均衡</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#高并发概念："><span class="nav-number">2.1.</span> <span class="nav-text">高并发概念：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#负载均衡："><span class="nav-number">2.2.</span> <span class="nav-text">负载均衡：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#tomcat并发："><span class="nav-number">2.3.</span> <span class="nav-text">tomcat并发：</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#三、nginx介绍"><span class="nav-number">3.</span> <span class="nav-text">三、nginx介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Nginx和Apache优缺点对比"><span class="nav-number">3.1.</span> <span class="nav-text">Nginx和Apache优缺点对比</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#四、安装Nginx"><span class="nav-number">4.</span> <span class="nav-text">四、安装Nginx</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#五、Nginx配置"><span class="nav-number">5.</span> <span class="nav-text">五、Nginx配置</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1、nginx默认配置"><span class="nav-number">5.1.</span> <span class="nav-text">1、nginx默认配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2、负载均衡配置"><span class="nav-number">5.2.</span> <span class="nav-text">2、负载均衡配置</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">SHEN JQ</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">Erstellt mit  <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> v3.8.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v6.6.0</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+    
+      
+  
+  <script color="0,0,255" opacity="0.5" zindex="-1" count="99" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script src="/js/src/utils.js?v=6.6.0"></script>
+
+  <script src="/js/src/motion.js?v=6.6.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/src/affix.js?v=6.6.0"></script>
+
+  <script src="/js/src/schemes/pisces.js?v=6.6.0"></script>
+
+
+
+  
+  <script src="/js/src/scrollspy.js?v=6.6.0"></script>
+<script src="/js/src/post-details.js?v=6.6.0"></script>
+
+
+
+  
+
+
+  <script src="/js/src/bootstrap.js?v=6.6.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
